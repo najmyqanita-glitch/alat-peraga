@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Pembelajaran Persamaan Lingkaran</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #f8fafc; color: #1e293b; min-height: 100vh; display: flex; flex-direction: column; }
+        .hidden { display: none !important; }
+        
+        .hero-bg { background: linear-gradient(135deg, #4f46e5 0%, #9333ea 50%, #db2777 100%); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; width: 100%; }
+        .card { background: white; border-radius: 20px; padding: 2rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; }
+        
+        .btn { padding: 0.75rem 1.5rem; border-radius: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.95rem; text-decoration: none; }
+        .btn-primary { background: #4f46e5; color: white; }
+        .btn-primary:hover { background: #4338ca; transform: translateY(-2px); }
+        .btn-success { background: #10b981; color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-gradient { background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; }
+        .btn-gradient:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-disabled { background: #334155; color: #94a3b8; cursor: not-allowed; }
+
+        input[type="text"], input[type="number"], select { width: 100%; padding: 0.75rem 1rem; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem; outline: none; transition: border 0.2s; }
+        input:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        input[type="range"] { width: 100%; accent-color: #4f46e5; cursor: pointer; }
+
+        .grid-2 { display: grid; grid-template-columns: 1.1fr 1.3fr; gap: 2rem; }
+        @media(max-width: 950px) { .grid-2 { grid-template-columns: 1fr; } }
+
+        canvas { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; width: 100%; max-width: 480px; height: 480px; display: block; margin: 0 auto; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+        
+        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        .soal-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
+        .pembahasan-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 14px; padding: 1.25rem; margin-top: 0.75rem; font-size: 0.9rem; color: #166534; line-height: 1.5; }
+        .theory-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1rem; font-size: 0.85rem; color: #334155; line-height: 1.6; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+
+    <!-- 1. PEMILIHAN ROLE -->
+    <section id="page-role" class="hero-bg" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem; position: relative;">
+        <div style="max-width: 700px; width: 100%; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(16px); border-radius: 30px; padding: 3rem; border: 1px solid rgba(255,255,255,0.25); text-align: center; color: white; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+            <span class="badge" style="background: #ec4899; color: white; margin-bottom: 1rem;">Media Pembelajaran Matematika</span>
+            <h1 style="font-size: 2.3rem; font-weight: 800; margin-bottom: 1rem;">Persamaan Lingkaran 🔵✨</h1>
+            <p style="font-size: 1.05rem; color: #e2e8f0; margin-bottom: 2.5rem;">
+                Silakan pilih masuk sebagai <b>Murid</b> untuk belajar dan mengerjakan LKPD, atau sebagai <b>Guru</b> untuk melihat rekap nilai kelas.
+            </p>
+            <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap;">
+                <button onclick="selectRole('murid')" class="btn" style="background: #10b981; color: white; font-size: 1.1rem; padding: 1.2rem 2.5rem; border-radius: 16px;">
+                    👨‍🎓 Masuk Sebagai Murid
+                </button>
+                <button onclick="selectRole('guru')" class="btn" style="background: #3b82f6; color: white; font-size: 1.1rem; padding: 1.2rem 2.5rem; border-radius: 16px;">
+                    👩‍🏫 Masuk Sebagai Guru
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. BERANDA MURID -->
+    <section id="page-home-murid" class="hero-bg hidden" style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem; position: relative;">
+        <div style="max-width: 700px; width: 100%; background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(16px); border-radius: 30px; padding: 3rem; border: 1px solid rgba(255,255,255,0.2); text-align: center; color: white; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span class="badge" style="background: #ec4899; color: white;">Menu Utama Murid</span>
+                <button onclick="navigateTo('page-role')" class="btn" style="background: rgba(255,255,255,0.2); color: white; font-size: 0.8rem; padding: 0.4rem 0.8rem;">Ganti Role</button>
+            </div>
+            <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 1rem;">Eksplorasi & Latihan</h1>
+            <p style="font-size: 1rem; color: #e2e8f0; margin-bottom: 2rem;">
+                Pelajari alat peraga interaktif terlebih dahulu untuk membuka gembok LKPD latihan soal!
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button onclick="navigateTo('page-alat-peraga')" class="btn" style="background: #10b981; color: white; font-size: 1.05rem; padding: 1rem 2rem;">
+                    🚀 Mulai (Alat Peraga)
+                </button>
+                <button id="btn-lkpd" onclick="checkLKPD()" class="btn btn-disabled" style="font-size: 1.05rem; padding: 1rem 2rem;">
+                    <span id="lkpd-icon">🔒</span> LKPD & Latihan Soal
+                </button>
+            </div>
+            <p id="lock-warning" class="hidden" style="color: #fef08a; font-size: 0.85rem; margin-top: 1rem; font-weight: 600;">
+                ⚠️ Selesaikan eksplorasi alat peraga dan klik tombol "Selesai" untuk membuka gembok LKPD!
+            </p>
+        </div>
+    </section>
+
+    <!-- 3. DASHBOARD GURU -->
+    <section id="page-home-guru" class="hidden" style="flex: 1; padding: 2rem;">
+        <div class="container" style="max-width: 900px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; background: white; padding: 1.5rem 2rem; border-radius: 16px; border: 1px solid #f1f5f9;">
+                <div>
+                    <span class="badge" style="background: #e0f2fe; color: #0284c7;">Dashboard Guru</span>
+                    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-top: 0.25rem;">Rekapitulasi Nilai Siswa</h2>
+                </div>
+                <button onclick="navigateTo('page-role')" class="btn" style="background: #f1f5f9; color: #475569;">⬅️ Kembali</button>
+            </div>
+            <div class="card" style="margin-bottom: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                    <p style="color: #64748b; font-size: 0.95rem; margin: 0;">
+                        Daftar nilai siswa yang masuk secara <i>real-time</i> dari Google Sheets (SheetDB):
+                    </p>
+                    <button onclick="loadGuruTable()" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">🔄 Muat Ulang Data</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                        <thead>
+                            <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #334155;">
+                                <th style="padding: 0.75rem;">Nama Siswa</th>
+                                <th style="padding: 0.75rem;">Kelas</th>
+                                <th style="padding: 0.75rem;">Absen</th>
+                                <th style="padding: 0.75rem;">Nilai</th>
+                                <th style="padding: 0.75rem;">Waktu Submit</th>
+                            </tr>
+                        </thead>
+                        <tbody id="guru-table-body">
+                            <tr><td colspan="5" style="text-align: center; padding: 1.5rem; color: #94a3b8;">Memuat data dari Google Sheets...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button onclick="downloadAllCSV()" class="btn btn-success">📥 Download Semua Rekap (Excel/CSV)</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. ALAT PERAGA -->
+    <section id="page-alat-peraga" class="hidden" style="flex: 1; padding: 2rem;">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; background: white; padding: 1rem 2rem; border-radius: 16px; border: 1px solid #f1f5f9;">
+                <div>
+                    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b;">Alat Peraga Persamaan Lingkaran</h2>
+                    <p style="font-size: 0.85rem; color: #64748b;">Eksplorasi titik pusat P(a,b) dan jari-jari r (Range -10 s.d 10).</p>
+                </div>
+                <button onclick="navigateTo('page-home-murid')" class="btn" style="background: #f1f5f9; color: #475569;">🏠 Beranda Murid</button>
+            </div>
+
+            <div class="grid-2">
+                <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; gap: 1.5rem;">
+                    <div>
+                        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1.25rem; color: #334155;">🎛️ Panel Kontrol Slider</h3>
+                        
+                        <div style="margin-bottom: 1.25rem;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem;">
+                                <span>Titik Pusat X (a):</span>
+                                <span id="val-a" style="color: #4f46e5;">2</span>
+                            </div>
+                            <input type="range" id="range-a" min="-10" max="10" value="2" step="1" oninput="updateAlatPeraga()">
+                        </div>
+
+                        <div style="margin-bottom: 1.25rem;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem;">
+                                <span>Titik Pusat Y (b):</span>
+                                <span id="val-b" style="color: #9333ea;">1</span>
+                            </div>
+                            <input type="range" id="range-b" min="-10" max="10" value="1" step="1" oninput="updateAlatPeraga()">
+                        </div>
+
+                        <div style="margin-bottom: 1.5rem;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem;">
+                                <span>Jari-jari (r):</span>
+                                <span id="val-r" style="color: #db2777;">4</span>
+                            </div>
+                            <input type="range" id="range-r" min="1" max="10" value="4" step="1" oninput="updateAlatPeraga()">
+                        </div>
+
+                        <div style="background: #eef2ff; border: 1px solid #c7d2fe; padding: 1rem; border-radius: 12px; text-align: center; margin-bottom: 1.25rem;">
+                            <p style="font-size: 0.75rem; font-weight: 700; color: #4f46e5; margin-bottom: 0.25rem; text-transform: uppercase;">Bentuk Persamaan Lingkaran:</p>
+                            <div id="formula-box" style="font-size: 1.15rem; font-weight: 800; color: #312e81;">(x - 2)² + (y - 1)² = 16</div>
+                        </div>
+
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 0.5rem; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
+                            <input type="checkbox" id="check-pythagoras" onchange="drawCanvas()" style="width: 1.2rem; height: 1.2rem; accent-color: #db2777;">
+                            <div>
+                                <span style="font-size: 0.9rem; font-weight: 600; color: #334155; display: block;">Pembuktian Teorema Pythagoras</span>
+                                <span style="font-size: 0.75rem; color: #64748b;">r² = (x - a)² + (y - b)²</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <button onclick="finishAlatPeraga()" class="btn btn-gradient" style="width: 100%; padding: 1rem;">
+                        ✨ Selesai & Buka Gembok LKPD
+                    </button>
+                </div>
+
+                <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div style="width: 100%; display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 0.85rem; font-weight: 700; color: #64748b;">
+                        <span>DIAGRAM KARTESIUS (SKALA 1 SATUAN)</span>
+                        <span style="color: #10b981;">● Aktif</span>
+                    </div>
+                    <canvas id="cartesian-canvas" width="480" height="480"></canvas>
+                    
+                    <div class="theory-box" style="width: 100%;">
+                        <b>💡 Langkah Pembuktian Teorema Pythagoras:</b>
+                        <ol style="padding-left: 1.2rem; margin-top: 0.4rem;">
+                            <li style="margin-bottom: 4px;"><b>Definisi:</b> Lingkaran adalah kumpulan titik A(x, y) yang berjarak tetap yaitu <i>r</i> dari titik pusat P(a, b).</li>
+                            <li style="margin-bottom: 4px;"><b>Sisi Segitiga Siku-siku:</b> Berdasarkan titik P dan A, ditarik garis bantu sehingga membentuk segitiga siku-siku dengan panjang alas = <b>(x - a)</b> dan tinggi = <b>(y - b)</b>, serta sisi miring = <b>r</b>.</li>
+                            <li><b>Teorema Pythagoras:</b> Berdasarkan rumus (Alas)² + (Tinggi)² = (Sisi Miring)², maka didapatkan persamaan: <br><b>(x - a)² + (y - b)² = r²</b></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. LKPD & LATIHAN 10 SOAL -->
+    <section id="page-lkpd" class="hidden" style="flex: 1; padding: 2rem;">
+        <div class="container" style="max-width: 800px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; background: white; padding: 1rem 2rem; border-radius: 16px; border: 1px solid #f1f5f9;">
+                <div>
+                    <span class="badge" style="background: #fce7f3; color: #db2777;">LKPD Interaktif</span>
+                    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-top: 0.25rem;">Latihan Soal Persamaan Lingkaran</h2>
+                </div>
+                <button onclick="navigateTo('page-home-murid')" class="btn" style="background: #f1f5f9; color: #475569;">🏠 Beranda Murid</button>
+            </div>
+
+            <div id="identitas-card" class="card" style="margin-bottom: 2rem;">
+                <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: #334155;">👤 Identitas Siswa</h3>
+                <div class="grid-2" style="gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #64748b; margin-bottom: 0.25rem;">Nama Lengkap</label>
+                        <input type="text" id="input-nama" placeholder="Contoh: Najmy Qanita">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #64748b; margin-bottom: 0.25rem;">Kelas</label>
+                        <input type="text" id="input-kelas" placeholder="Contoh: XI MIPA">
+                    </div>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #64748b; margin-bottom: 0.25rem;">Nomor Absen</label>
+                    <input type="number" id="input-absen" placeholder="Contoh: 15" style="max-width: 200px;">
+                </div>
+                <button onclick="unlockSoal()" class="btn btn-primary">Mulai Kerjakan Soal ➡️</button>
+            </div>
+
+            <div id="soal-container" class="hidden">
+                <div class="card" style="margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: #4f46e5; margin-bottom: 1.5rem; border-bottom: 2px solid #eef2ff; padding-bottom: 0.75rem;">Latihan 10 Soal Pilihan Ganda</h3>
+                    
+                    <!-- Soal 1 -->
+                    <div class="soal-box">
+                        <p style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.75rem;">1. Persamaan lingkaran yang berpusat di titik O(0,0) dan memiliki jari-jari r = 5 adalah...</p>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem;">
+                            <label><input type="radio" name="q1" value="A"> A. x² + y² = 5</label>
+                            <label><input type="radio" name="q1" value="B"> B. x² + y² = 10</label>
+                            <label><input type="radio" name="q1" value="C"> C. x² + y² = 25</label>
+                            <label><input type="radio" name="q1" value="D"> D. x² - y² = 25</label>
+                            <label><input type="radio" name="q1" value="E"> E. (x-5)² + (y-5)² = 25</label>
+                        </div>
+                    </div>
+
+                    <!-- Soal 2 -->
+                    <div class="soal-box">
+                        <p style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.75rem;">2. Diketahui lingkaran dengan persamaan x² + y² = 49. Jari-jari lingkaran tersebut adalah...</p>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem;">
+                            <label><input type="radio" name="q2" value="A"> A. 7</label>
+                            <label><input type="radio" name="q2" value="B"> B. -7</label>
+                            <label><input type="radio" name="q2" value="C"> C. 14</label>
+                            <label><input type="radio" name="q2" value="D"> D. 24,5</label>
+                            <label><input type="radio" name="q2" value="E"> E. 49</label>
+                        </div>
+                    </div>
+
+                    <!-- Soal 3 -->
+                    <div class="soal-box">
+                        <p style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.75rem;">3. Persamaan lingkaran yang berpusat di titik (3,-4) dan memiliki jari-jari 6 adalah...</p>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem;">
+                            <label><input type="radio" name="q3" value="A"> A. (x-3)² + (y+4)² = 6</label>
+                            <label><input type="radio" name="q3" value="B"> B. (x+3)² + (y-4)² = 6</label>
+                            <label><input type="radio" name="q3" value="C"> C. (x-3)² + (y+4)² = 36</label>
+                            <label><input type="radio" name="q3" value="D"> D. (x+3)² + (y-4)² = 36</label>
+                            <label><input type="radio" name="q3" value="E"> E. (x-3)² + (y-4)² = 36</label>
+                        </div>
+                    </div>
+
+                    <!-- Soal 4 -->
+                    <div class="soal-box">
+                        <p style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.75rem;">4. Pusat dan jari-jari dari lingkaran dengan persamaan (x+2)² + (y-5)² = 81 berturut-turut adalah...</p>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem;">
+                            <label><input type="radio" name="q4" value="A"> A. (2,-5) dan 9</label>
+                            <label><input type="radio" name="q4" value="B"> B. (-2,5) dan 9</label>
+                            <label><input type="radio" name="q4" value="C"> C. (-2,5) dan 81</label>
+                            <label><input type="radio" name="q4" value="D"> D. (2,-5) dan 81</label>
+                            <label><input type="radio" name="q4" value="E"> E. (2,5) dan 9</label>
+                        </div>
+                    </div>
+
+                    <!-- Soal 5 -->
+                    <div class="soal-box">
+                        <p style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.75rem;">5. Persamaan lingkaran yang berpusat di O(0,0) dan melalui titik (3,-4) adalah...</p>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem;">
+                            <label><input type="radio" name="q5" value="A"> A. x² + y² = 5</label>
+                            <label><input type="radio" name="q5" value="B"> B. x² + y² = 7</label>
+                            <label><input type="radio" name="q5" value="C"> C. x² + y² = 12</label>
+                            <label><input type="radio" name="q5" value="D"> D. x² + y² = 25</label>
+                            <label><input type="radio" name="q5" value="E"> E. x² + y² = 49</label>
+                        </div>
+                    </div>
+
+                    <!-- Soal 6 -->
+                    <div class="soal-box">
+                        <p style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.75rem;">6. Koordinat pusat dari lingkaran dengan persamaan (x-5)² + y² = 64 adalah...</p>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem;">
+                            <label><input type="radio" name="q6" value="A"> A. (0,5)</label>
+                            <label><input type="radio" name="q6" value="B"> B. (5,0)</label>
+                            <label><input type="radio" name="q6" value="C"> C. (-5,0)</label>
+                            <label><input type="radio" name="q6" value="D"> D. (0,-5)</label>
+                            <label><input type="radio" name="q6" value="E"> E. (5,5)</label>
+                        </div>
+                    </div>
+
+                    <!-- Soal 7 -->
+                    <div class="soal-box">
+                        <p style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.75rem;">7. Persamaan lingkaran yang berpusat di titik (-2,3) dan melalui titik (1,-1) adalah...</p>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem;">
+                            <label><input type="radio" name="q7" value="A"> A. (x+2)² + (y-3)² = 5</label>
+                            <label><input type="radio" name="q7" value="B"> B. (x+2)² + (y-3)² = 25</label>
+                            <label><input type="radio" name="q7" value="C"> C. (x-2)² + (y+3)² = 25</label>
+                            <label><input type="radio" name="q7" value="D"> D. (x+2)² + (y-3)² = 50</label>
+                            <label><input type="radio" name="q7" value="E"> E. (x-2)² + (y+3)² = 50</label>
+                        </div>
+                    </div>
+
+                    <!-- Soal 8 -->
+                    <div class="soal-box">
+                        <p style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.75rem;">8. Jari-jari lingkaran dengan persamaan x² + y² - 12 = 0 adalah...</p>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem;">
+                            <label><input type="radio" name="q8" value="A"> A. 2√3</label>
+                            <label><input type="radio" name="q8" value="B"> B. 3√2</label>
+                            <label><input type="radio" name="q8" value="C"> C. 4√3</label>
+                            <label><input type="radio" name="q8" value="D"> D. 6</label>
+                            <label><input type="radio" name="q8" value="E"> E. 12</label>
+                        </div>
+                    </div>
+
+                    <!-- Soal 9 -->
+                    <div class="soal-box">
+                        <p style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.75rem;">9. Diketahui lingkaran berpusat di (0,0) dan berjari-jari 3√2. Persamaan lingkaran tersebut adalah...</p>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem;">
+                            <label><input type="radio" name="q9" value="A"> A. x² + y² = 6</label>
+                            <label><input type="radio" name="q9" value="B"> B. x² + y² = 9</label>
+                            <label><input type="radio" name="q9" value="C"> C. x² + y² = 12</label>
+                            <label><input type="radio" name="q9" value="D"> D. x² + y² = 18</label>
+                            <label><input type="radio" name="q9" value="E"> E. x² + y² = 36</label>
+                        </div>
+                    </div>
+
+                    <!-- Soal 10 -->
+                    <div class="soal-box">
+                        <p style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.75rem;">10. Panjang jari-jari dari lingkaran dengan persamaan (x-4)² + (y+1)² = 40 adalah...</p>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem;">
+                            <label><input type="radio" name="q10" value="A"> A. 2√10</label>
+                            <label><input type="radio" name="q10" value="B"> B. 4√10</label>
+                            <label><input type="radio" name="q10" value="C"> C. 10√2</label>
+                            <label><input type="radio" name="q10" value="D"> D. 20</label>
+                            <label><input type="radio" name="q10" value="E"> E. 40</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="submitLKPD()" id="submit-btn" class="btn btn-success" style="width: 100%; padding: 1rem; font-size: 1.05rem;">
+                    📤 Lihat Skor dan Pembahasan
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. HALAMAN HASIL & SKOR -->
+    <section id="page-hasil" class="hidden" style="flex: 1; padding: 2rem;">
+        <div class="container" style="max-width: 800px;">
+            <div class="card" style="text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎉</div>
+                <h2 style="font-size: 2rem; font-weight: 800; color: #1e293b; margin-bottom: 0.5rem;">Hasil Latihan LKPD</h2>
+                <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 1.5rem;">Nilai berhasil dihitung dan otomatis terkirim ke Google Sheets guru.</p>
+
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.5rem; max-width: 450px; margin: 0 auto 1.5rem auto; text-align: left;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                        <span style="color: #64748b;">Nama Siswa:</span>
+                        <span id="res-nama" style="font-weight: 700; color: #1e293b;">-</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                        <span style="color: #64748b;">Kelas / Absen:</span>
+                        <span id="res-kelas" style="font-weight: 700; color: #1e293b;">-</span>
+                    </div>
+                    <div style="border-top: 1px solid #e2e8f0; padding-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 700; color: #334155;">Total Skor Akhir:</span>
+                        <span id="res-nilai" style="font-size: 1.5rem; font-weight: 800; color: #4f46e5; background: #eef2ff; padding: 0.25rem 1rem; border-radius: 10px;">0 / 100</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="navigateTo('page-pembahasan')" class="btn btn-primary" style="padding: 0.9rem 2rem;">📖 Lihat Pembahasan</button>
+                    <button onclick="navigateTo('page-home-murid')" class="btn" style="background: #f1f5f9; color: #475569;">🏠 Beranda Murid</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. HALAMAN PEMBAHASAN LENGKAP -->
+    <section id="page-pembahasan" class="hidden" style="flex: 1; padding: 2rem;">
+        <div class="container" style="max-width: 800px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; background: white; padding: 1rem 2rem; border-radius: 16px; border: 1px solid #f1f5f9;">
+                <div>
+                    <span class="badge" style="background: #e0f2fe; color: #0284c7;">Evaluasi Pembelajaran</span>
+                    <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-top: 0.25rem;">Pembahasan Soal LKPD</h2>
+                </div>
+                <button onclick="navigateTo('page-home-murid')" class="btn" style="background: #f1f5f9; color: #475569;">🏠 Beranda Murid</button>
+            </div>
+
+            <div class="card">
+                <div id="pembahasan-list" style="display: flex; flex-direction: column; gap: 1.5rem;"></div>
+                <div style="margin-top: 2rem; text-align: center;">
+                    <button onclick="navigateTo('page-home-murid')" class="btn btn-primary" style="padding: 1rem 2.5rem; font-size: 1.05rem;">🏠 Beranda Murid</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SCRIPT -->
+    <script>
+        // Endpoint SheetDB kamu
+        const SHEETDB_URL = "https://sheetdb.io/api/v1/k27l99tu5htoq";
+
+        let isUnlocked = false;
+        let studentResult = { nama: '', kelas: '', absen: '', nilai: 0 };
+
+        const kunciJawaban = {
+            q1: { jawab: 'C', pembahasaan: 'Persamaan lingkaran berpusat di (0,0) dengan jari-jari r dirumuskan sebagai x² + y² = r². Karena r = 5, maka r² = 5² = 25. Jadi, persamaan lingkarannya adalah x² + y² = 25.' },
+            q2: { jawab: 'A', pembahasaan: 'Persamaan x² + y² = 49 memiliki bentuk umum x² + y² = r². Maka r² = 49 ⇒ r = √49 = 7 (jari-jari selalu bernilai positif). Jadi, jari-jari lingkaran adalah 7.' },
+            q3: { jawab: 'C', pembahasaan: 'Persamaan lingkaran berpusat di titik (a,b) dengan jari-jari r dirumuskan sebagai (x - a)² + (y - b)² = r². Diketahui (a,b) = (3,-4) dan r = 6:\n(x - 3)² + (y - (-4))² = 6² ⇒ (x - 3)² + (y + 4)² = 36.' },
+            q4: { jawab: 'B', pembahasaan: 'Bentuk umum persamaan lingkaran adalah (x - a)² + (y - b)² = r². Dari persamaan (x + 2)² + (y - 5)² = 81:\nPusat (a,b) = (-2, 5)\nr² = 81 ⇒ r = √81 = 9\nJadi, pusatnya (-2,5) dan jari-jarinya 9.' },
+            q5: { jawab: 'D', pembahasaan: 'Substitusikan titik (3,-4) ke persamaan x² + y² = r²:\n3² + (-4)² = r²\n9 + 16 = r²\nr² = 25.' },
+            q6: { jawab: 'B', pembahasaan: 'Bentuk (x - 5)² + y² = 64 dapat ditulis sebagai (x - 5)² + (y - 0)² = 64. Maka nilai a = 5 dan b = 0. Jadi, koordinat pusatnya adalah (5,0).' },
+            q7: { jawab: 'B', pembahasaan: 'Persamaan lingkaran berpusat di (-2,3) adalah (x + 2)² + (y - 3)² = r². Substitusikan titik (1,-1) untuk mencari r²:\n(1 + 2)² + (-1 - 3)² = r²\n3² + (-4)² = r²\n9 + 16 = r²\nr² = 25.\nJadi, persamaan lingkarannya adalah (x + 2)² + (y - 3)² = 25.' },
+            q8: { jawab: 'A', pembahasaan: 'Ubah bentuk persamaan menjadi x² + y² = 12. Maka,\nr² = 12\nr = √12\nr = √(4 × 3)\nr = 2√3.' },
+            q9: { jawab: 'D', pembahasaan: 'Persamaan lingkaran berpusat di (0,0) adalah x² + y² = r². Karena r = 3√2, maka:\nr² = (3√2)²\nr² = 3² × (√2)²\nr² = 9 × 2\nr² = 18.\nJadi, persamaan lingkarannya adalah x² + y² = 18.' },
+            q10: { jawab: 'A', pembahasaan: 'Dari persamaan (x - 4)² + (y + 1)² = 40, diperoleh nilai r² = 40. Maka:\nr = √40\nr = √(4 × 10)\nr = 2√10.' }
+        };
+
+        function navigateTo(pageId) {
+            document.getElementById('page-role').classList.add('hidden');
+            document.getElementById('page-home-murid').classList.add('hidden');
+            document.getElementById('page-home-guru').classList.add('hidden');
+            document.getElementById('page-alat-peraga').classList.add('hidden');
+            document.getElementById('page-lkpd').classList.add('hidden');
+            document.getElementById('page-hasil').classList.add('hidden');
+            document.getElementById('page-pembahasan').classList.add('hidden');
+
+            document.getElementById(pageId).classList.remove('hidden');
+            window.scrollTo(0, 0);
+
+            if (pageId === 'page-alat-peraga') {
+                setTimeout(drawCanvas, 50);
+            }
+            if (pageId === 'page-home-guru') {
+                loadGuruTable();
+            }
+        }
+
+        function selectRole(role) {
+            if (role === 'murid') navigateTo('page-home-murid');
+            else navigateTo('page-home-guru');
+        }
+
+        function checkLKPD() {
+            if (isUnlocked) navigateTo('page-lkpd');
+            else {
+                const warn = document.getElementById('lock-warning');
+                warn.classList.remove('hidden');
+                setTimeout(() => warn.classList.add('hidden'), 4000);
+            }
+        }
+
+        function finishAlatPeraga() {
+            isUnlocked = true;
+            const btnLkpd = document.getElementById('btn-lkpd');
+            const icon = document.getElementById('lkpd-icon');
+
+            icon.innerText = '🔓';
+            btnLkpd.classList.remove('btn-disabled');
+            btnLkpd.classList.add('btn-gradient');
+
+            alert('✨ Selamat! Eksplorasi alat peraga selesai. Gembok LKPD sekarang terbuka.');
+            navigateTo('page-home-murid');
+        }
+
+        function updateAlatPeraga() {
+            const a = parseInt(document.getElementById('range-a').value);
+            const b = parseInt(document.getElementById('range-b').value);
+            const r = parseInt(document.getElementById('range-r').value);
+
+            document.getElementById('val-a').innerText = a;
+            document.getElementById('val-b').innerText = b;
+            document.getElementById('val-r').innerText = r;
+
+            let sX = a === 0 ? 'x²' : (a > 0 ? `(x - ${a})²` : `(x + ${Math.abs(a)})²`);
+            let sY = b === 0 ? 'y²' : (b > 0 ? `(y - ${b})²` : `(y + ${Math.abs(b)})²`);
+            let rSquared = r * r; 
+            document.getElementById('formula-box').innerHTML = `${sX} + ${sY} = ${rSquared}`;
+
+            drawCanvas();
+        }
+
+        function drawCanvas() {
+            const canvas = document.getElementById('cartesian-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            const dpr = window.devicePixelRatio || 1;
+            const displayWidth = 480;
+            const displayHeight = 480;
+
+            canvas.width = displayWidth * dpr;
+            canvas.height = displayHeight * dpr;
+            canvas.style.width = displayWidth + 'px';
+            canvas.style.height = displayHeight + 'px';
+
+            ctx.scale(dpr, dpr);
+            ctx.clearRect(0, 0, displayWidth, displayHeight);
+
+            const scale = 20; 
+            const ox = displayWidth / 2;
+            const oy = displayHeight / 2;
+
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 1;
+            for (let x = 0; x <= displayWidth; x += scale) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, displayHeight); ctx.stroke();
+            }
+            for (let y = 0; y <= displayHeight; y += scale) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(displayWidth, y); ctx.stroke();
+            }
+
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(0, oy); ctx.lineTo(displayWidth, oy); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(ox, 0); ctx.lineTo(ox, displayHeight); ctx.stroke();
+
+            ctx.fillStyle = '#334155';
+            ctx.font = 'bold 9px sans-serif';
+            ctx.textAlign = 'center';
+            for (let i = -10; i <= 10; i++) {
+                if (i !== 0) {
+                    ctx.fillText(i, ox + i * scale, oy + 13);
+                    ctx.textAlign = 'right';
+                    ctx.fillText(i, ox - 5, oy - i * scale + 3);
+                    ctx.textAlign = 'center';
+                }
+            }
+            ctx.fillText('0', ox - 8, oy + 13);
+
+            const a = parseInt(document.getElementById('range-a').value);
+            const b = parseInt(document.getElementById('range-b').value);
+            const r = parseInt(document.getElementById('range-r').value);
+
+            const cx = ox + a * scale;
+            const cy = oy - b * scale;
+            const pr = r * scale;
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, pr, 0, 2 * Math.PI);
+            ctx.fillStyle = 'rgba(79, 70, 229, 0.08)';
+            ctx.fill();
+            ctx.strokeStyle = '#4f46e5';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = '#db2777';
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.fillStyle = '#831843';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(`P(${a}, ${b})`, cx + 10, cy - 6);
+
+            const showPyth = document.getElementById('check-pythagoras').checked;
+
+            if (showPyth) {
+                const angle = Math.PI / 4;
+                const px = cx + pr * Math.cos(angle);
+                const py = cy - pr * Math.sin(angle);
+
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, py);
+                ctx.strokeStyle = '#db2777'; ctx.lineWidth = 2; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
+
+                ctx.fillStyle = '#db2777';
+                ctx.font = 'bold 11px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('r', (cx + px) / 2 - 10, (cy + py) / 2 - 5);
+
+                ctx.beginPath(); ctx.moveTo(px, cy); ctx.lineTo(px, py); ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.stroke();
+                
+                ctx.fillStyle = '#10b981';
+                ctx.textAlign = 'left';
+                ctx.fillText('y - b', px + 6, (cy + py) / 2);
+
+                ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(px, cy); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; ctx.stroke();
+
+                ctx.fillStyle = '#ef4444';
+                ctx.textAlign = 'center';
+                ctx.fillText('x - a', (cx + px) / 2, cy + 16);
+
+                ctx.beginPath(); ctx.arc(px, py, 5, 0, 2 * Math.PI); ctx.fillStyle = '#10b981'; ctx.fill(); ctx.stroke();
+                
+                ctx.fillStyle = '#065f46';
+                ctx.textAlign = 'left';
+                ctx.font = 'bold 11px sans-serif';
+                ctx.fillText('A(x,y)', px + 10, py - 6);
+            }
+        }
+
+        function unlockSoal() {
+            const nama = document.getElementById('input-nama').value.trim();
+            const kelas = document.getElementById('input-kelas').value.trim();
+            const absen = document.getElementById('input-absen').value.trim();
+
+            if (!nama || !kelas || !absen) {
+                alert('⚠️ Mohon isi Nama, Kelas, dan Nomor Absen terlebih dahulu!');
+                return;
+            }
+
+            studentResult.nama = nama;
+            studentResult.kelas = kelas;
+            studentResult.absen = absen;
+
+            document.getElementById('identitas-card').style.opacity = '0.6';
+            document.getElementById('identitas-card').style.pointerEvents = 'none';
+            document.getElementById('soal-container').classList.remove('hidden');
+            window.scrollTo({ top: document.getElementById('soal-container').offsetTop - 20, behavior: 'smooth' });
+        }
+
+        async function submitLKPD() {
+            let score = 0;
+            let pembahasanHTML = '';
+
+            for (let i = 1; i <= 10; i++) {
+                const radios = document.getElementsByName(`q${i}`);
+                let userAns = '';
+                for (let rad of radios) {
+                    if (rad.checked) userAns = rad.value;
+                }
+
+                const kunci = kunciJawaban[`q${i}`];
+                const isCorrect = (userAns === kunci.jawab);
+                if (isCorrect) score += 10;
+
+                pembahasanHTML += `
+                    <div class="soal-box">
+                        <p style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem;">Soal ${i}:</p>
+                        <p style="font-size: 0.9rem; margin-bottom: 0.25rem;">Jawaban Kamu: <b>${userAns || 'Tidak dijawab'}</b> ${isCorrect ? '✅ <span style="color: #10b981;">Benar</span>' : '❌ <span style="color: #ef4444;">Salah</span> (Kunci: ' + kunci.jawab + ')'}</p>
+                        <div class="pembahasan-box">
+                            <b>Pembahasan:</b><br>${kunci.pembahasaan.replace(/\n/g, '<br>')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            studentResult.nilai = score;
+            document.getElementById('res-nama').innerText = studentResult.nama;
+            document.getElementById('res-kelas').innerText = `${studentResult.kelas} (Absen: ${studentResult.absen})`;
+            document.getElementById('res-nilai').innerText = `${score} / 100`;
+            document.getElementById('pembahasan-list').innerHTML = pembahasanHTML;
+
+            // Kirim data ke SheetDB
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Mengirim nilai ke server...";
+
+            const dataObj = {
+                nama: studentResult.nama,
+                kelas: studentResult.kelas,
+                absen: studentResult.absen,
+                nilai: studentResult.nilai,
+                waktu: new Date().toLocaleString('id-ID')
+            };
+
+            try {
+                await fetch(SHEETDB_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ data: [dataObj] })
+                });
+            } catch (error) {
+                console.error("Gagal mengirim ke SheetDB:", error);
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.innerText = "📤 Lihat Skor dan Pembahasan";
+            navigateTo('page-hasil');
+        }
+
+        // --- DASHBOARD GURU MENGAMBIL DATA DARI SHEETDB ---
+        async function loadGuruTable() {
+            const tbody = document.getElementById('guru-table-body');
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 1.5rem; color: #94a3b8;">Memuat data dari Google Sheets...</td></tr>`;
+
+            try {
+                const response = await fetch(SHEETDB_URL);
+                const records = await response.json();
+                
+                if (!records || records.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 1.5rem; color: #94a3b8;">Belum ada data siswa yang masuk.</td></tr>`;
+                    return;
+                }
+
+                let html = '';
+                records.forEach(r => {
+                    html += `
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 0.75rem; font-weight: 600;">${r.nama || '-'}</td>
+                            <td style="padding: 0.75rem;">${r.kelas || '-'}</td>
+                            <td style="padding: 0.75rem;">${r.absen || '-'}</td>
+                            <td style="padding: 0.75rem;"><span style="background: #eef2ff; color: #4f46e5; padding: 0.2rem 0.6rem; border-radius: 6px; font-weight: 700;">${r.nilai || '0'}</span></td>
+                            <td style="padding: 0.75rem; color: #64748b; font-size: 0.85rem;">${r.waktu || '-'}</td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            } catch (error) {
+                console.error("Gagal mengambil data SheetDB:", error);
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 1.5rem; color: #ef4444;">Gagal memuat data dari server. Periksa koneksi internet Anda.</td></tr>`;
+            }
+        }
+
+        async function downloadAllCSV() {
+            try {
+                const response = await fetch(SHEETDB_URL);
+                const records = await response.json();
+                
+                if (!records || records.length === 0) {
+                    alert('Belum ada data nilai untuk diunduh.');
+                    return;
+                }
+
+                const rows = [['Nama Siswa', 'Kelas', 'Nomor Absen', 'Nilai LKPD', 'Waktu Submit']];
+                records.forEach(r => {
+                    rows.push([`"${r.nama || ''}"`, `"${r.kelas || ''}"`, `"${r.absen || ''}"`, r.nilai || 0, `"${r.waktu || ''}"`]);
+                });
+
+                const csvContent = "data:text/csv;charset=utf-8," + rows.map(e => e.join(",")).join("\n");
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `Rekap_Nilai_Persamaan_Lingkaran.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (error) {
+                alert('Gagal mengunduh rekap nilai.');
+            }
+        }
+
+        window.onload = function() {
+            updateAlatPeraga();
+        };
+    </script>
+</body>
+</html>
